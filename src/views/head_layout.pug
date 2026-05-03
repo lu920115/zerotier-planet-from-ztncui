@@ -9,9 +9,13 @@ mixin nav_item(name, displayName, href)
 
 mixin json_value(value)
   - if ((!!value ) && (value.constructor == Object || value.constructor == Array))
+    - var str = JSON.stringify(value)
+    - if (str.length < 60)
+      code= str
+    - else
       code(style='white-space: pre;')= JSON.stringify(value, null, 2)
   - else
-      code= value
+    code= value
 
 doctype html
 html(lang='en')
