@@ -10,8 +10,11 @@ mixin nav_item(name, displayName, href)
 mixin json_value(value)
   - if ((!!value ) && (value.constructor == Object || value.constructor == Array))
     - var str = JSON.stringify(value, null, 1)
-    - str = str.replace(/(\n\s*\})\s*(\n\s*\])/g, '$1]')  // Array 结尾 }] 合并到一行
-    - str = str.replace(/(\S)\n\s*\}$/g, '$1}')  // Object 结尾 } 上移，不单独占行
+    - str = str.replace(/\[\n\s*\{/g, '[{')                    // Array 开头 [{ 合并
+    - str = str.replace(/\},\n\s*\{/g, '}, {')                 // Array 元素之间 }, { 合并
+    - str = str.replace(/\{\n\s*"(\w+)"/g, '{"$1"')            // Object 开头 {"key" 合并
+    - str = str.replace(/(\S)\n\s*\}$/gm, '$1}')              // Object 结尾 } 上移（只处理行尾）
+    - str = str.replace(/\}\n\s*\]/g, '}]')                    // Array 结尾 }] 合并
     - if (str.length < 10)
       code= str
     - else
