@@ -9,11 +9,12 @@ mixin nav_item(name, displayName, href)
 
 mixin json_value(value)
   - if ((!!value ) && (value.constructor == Object || value.constructor == Array))
-    - var str = JSON.stringify(value)
-    - if (str.length < 60)
+    - var str = JSON.stringify(value, null, 1)
+    - str = str.replace(/(\n\s*\})\s*(\n\s*\])/g, '$1$2')
+    - if (str.length < 10)
       code= str
     - else
-      code(style='white-space: pre;')= JSON.stringify(value, null, 2)
+      code(style='white-space: pre;')= str
   - else
     code= value
 
