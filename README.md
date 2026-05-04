@@ -4,6 +4,23 @@ ztncui is a web user interface for a standalone [ZeroTier](https://zerotier.com)
 
 Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/ztncui).
 
+# ztncui - ZeroTier network controller UI (排版优化版)
+
+这是 [key-networks/ztncui](https://github.com/key-networks/ztncui) 的修改版，**修复了 Web 管理界面 `Detail for network` 页面的 JSON 排版问题**。
+
+## 改进内容
+
+- 短数组/对象（如 `[null]`、`[]`、`{}`）单行显示
+- 多元素数组每个 Object 紧凑一行显示
+- Object 多行 1 格缩进，开头结尾括号合并
+- 整体排版更紧凑，减少碎片化
+
+## Docker 镜像
+
+```bash
+docker pull lu920115/ztncui:v1.14.1.1
+```
+
 Follow us on [![alt @key_networks on Twitter](https://i.imgur.com/wWzX9uB.png)](https://twitter.com/key_networks)
 
 ## Packages
