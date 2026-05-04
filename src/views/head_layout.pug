@@ -8,22 +8,39 @@ mixin nav_item(name, displayName, href)
     a(href=href) #{displayName}
 
 mixin json_value(value)
+  - function sortKeys(obj) {
+  -   if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+  -   var priority = ['ipRangeStart', 'ipRangeEnd', 'target', 'via', 'not', 'or', 'type'];
+  -   var ordered = {};
+  -   priority.forEach(function(k) { if (obj.hasOwnProperty(k)) ordered[k] = obj[k]; });
+  -   Object.keys(obj).forEach(function(k) { if (!ordered.hasOwnProperty(k)) ordered[k] = obj[k]; });
+  -   return ordered;
+  - }
   - if ((!!value ) && (value.constructor == Array))
     - var compact = JSON.stringify(value)
     - if (compact.length < 15)
       code= compact
     - else if (value.length === 1 && typeof value[0] === 'object' && value[0] !== null)
-      - var inner = JSON.stringify(value[0], null, 1)
+      - var item = sortKeys(value[0])
+      - var inner = JSON.stringify(item, null, 1)
       - inner = inner.replace(/\{\n\s*"(\w+)"/g, '{"$1"')
       - inner = inner.replace(/(\S)\n\s*\}$/gm, '$1}')
+      - inner = inner.replace(/,\n\s*/g, ', ')
       code(style='white-space: pre;')= '[' + inner + ']'
     - else
-      - var items = value.map(function(item) { return JSON.stringify(item); })
+      - var items = value.map(function(item) {
+      -   if (item && typeof item === 'object' && !Array.isArray(item)) {
+      -     return JSON.stringify(sortKeys(item));
+      -   }
+      -   return JSON.stringify(item);
+      - })
       code(style='white-space: pre;')= '[' + items.join(',\n') + ']'
   - else if ((!!value ) && (value.constructor == Object))
-    - var str = JSON.stringify(value, null, 1)
+    - var ordered = sortKeys(value)
+    - var str = JSON.stringify(ordered, null, 1)
     - str = str.replace(/\{\n\s*"(\w+)"/g, '{"$1"')
     - str = str.replace(/(\S)\n\s*\}$/gm, '$1}')
+    - str = str.replace(/,\n\s*/g, ', ')
     - if (str.length < 15)
       code= str
     - else
