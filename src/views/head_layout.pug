@@ -25,7 +25,9 @@ mixin json_value(value)
       - var inner = JSON.stringify(item, null, 1)
       - inner = inner.replace(/\{\n\s*"(\w+)"/g, '{"$1"')
       - inner = inner.replace(/(\S)\n\s*\}$/gm, '$1}')
-      - inner = inner.replace(/,\n\s*/g, ', ')
+      - // 只有字段数≤2的短对象（如routes）才压缩成一行
+      - if (Object.keys(item).length <= 2)
+        - inner = inner.replace(/,\n\s*/g, ', ')
       code(style='white-space: pre;')= '[' + inner + ']'
     - else
       - var items = value.map(function(item) {
@@ -40,7 +42,7 @@ mixin json_value(value)
     - var str = JSON.stringify(ordered, null, 1)
     - str = str.replace(/\{\n\s*"(\w+)"/g, '{"$1"')
     - str = str.replace(/(\S)\n\s*\}$/gm, '$1}')
-    - str = str.replace(/,\n\s*/g, ', ')
+    - // 对象分支不做全局压缩，保持上一版的多行排版
     - if (str.length < 15)
       code= str
     - else
