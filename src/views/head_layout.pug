@@ -8,14 +8,23 @@ mixin nav_item(name, displayName, href)
     a(href=href) #{displayName}
 
 mixin json_value(value)
-  - if ((!!value ) && (value.constructor == Object || value.constructor == Array))
+  - if ((!!value ) && (value.constructor == Array))
+    - var compact = JSON.stringify(value)
+    - if (compact.length < 15)
+      code= compact
+    - else if (value.length === 1 && typeof value[0] === 'object' && value[0] !== null)
+      - var inner = JSON.stringify(value[0], null, 1)
+      - inner = inner.replace(/\{\n\s*"(\w+)"/g, '{"$1"')
+      - inner = inner.replace(/(\S)\n\s*\}$/gm, '$1}')
+      code(style='white-space: pre;')= '[' + inner + ']'
+    - else
+      - var items = value.map(function(item) { return JSON.stringify(item); })
+      code(style='white-space: pre;')= '[' + items.join(',\n') + ']'
+  - else if ((!!value ) && (value.constructor == Object))
     - var str = JSON.stringify(value, null, 1)
-    - str = str.replace(/\[\n\s*\{/g, '[{')                    // Array 开头 [{ 合并
-    - str = str.replace(/\},\n\s*\{/g, '}, {')                 // Array 元素之间 }, { 合并
-    - str = str.replace(/\{\n\s*"(\w+)"/g, '{"$1"')            // Object 开头 {"key" 合并
-    - str = str.replace(/(\S)\n\s*\}$/gm, '$1}')              // Object 结尾 } 上移（只处理行尾）
-    - str = str.replace(/\}\n\s*\]/g, '}]')                    // Array 结尾 }] 合并
-    - if (str.length < 10)
+    - str = str.replace(/\{\n\s*"(\w+)"/g, '{"$1"')
+    - str = str.replace(/(\S)\n\s*\}$/gm, '$1}')
+    - if (str.length < 15)
       code= str
     - else
       code(style='white-space: pre;')= str
