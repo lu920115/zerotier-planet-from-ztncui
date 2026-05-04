@@ -20,6 +20,23 @@ Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/zt
 ```bash
 docker pull lu920115/ztncui:v1.14.1.1
 ```
+## mixins.pug 修改记录（排版优化）
+
+**问题**：routes 中 via 字段被挤到下一行，阅读不连贯  
+**解决**：在 `json_value` mixin 中增加字段数判断
+
+**修改位置**：`src/views/mixins.pug`
+
+**关键逻辑**：
+- 单元素数组（如 routes）且字段数 ≤ 2：压缩成一行
+- 字段数 > 2（如 rules、v4AssignMode）：保持多行排版
+
+**代码变动**：
+在 `value.length === 1` 分支中，增加：
+```javascript
+if (Object.keys(item).length <= 2) {
+  inner = inner.replace(/,\n\s*/g, ', ');
+}
 
 Follow us on [![alt @key_networks on Twitter](https://i.imgur.com/wWzX9uB.png)](https://twitter.com/key_networks)
 
