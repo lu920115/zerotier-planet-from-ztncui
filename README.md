@@ -18,7 +18,7 @@ Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/zt
 ## Docker 镜像
 
 ```bash
-docker pull lu920115/ztncui:v1.14.1.1
+docker pull lu920115/zerotier-planet:v1.14.1.2
 ```
 ## mixins.pug 修改记录（排版优化）
 
