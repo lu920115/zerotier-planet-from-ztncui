@@ -17,9 +17,28 @@ Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/zt
 
 ## Docker 镜像
 
+### Docker Hub
 ```bash
-docker pull lu920115/zerotier-planet:v1.14.1.2
+docker pull lu920115/zerotier-planet:v1.16.1.1
 ```
+
+### GitHub Container Registry (GHCR)
+```bash
+docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1
+```
+
+## 版本更新记录
+
+### v1.16.1.1 (2025-05-24)
+- **ZeroTier One 升级**: 从 v1.14.1.2 自动升级至 v1.16.1（通过官方 apt 源）
+- **CVE 漏洞修复**: 通过 `apt-get upgrade` 更新系统包，修复 82 个 CVE 漏洞
+  - 修复前: 205 个漏洞 (3 Critical, 52 High, 59 Medium)
+  - 修复后: 123 个漏洞 (3 Critical, 22 High, 28 Medium)
+- **剩余漏洞说明**: 剩余 3 个 Critical CVE 来自 ZeroTier One 内置的 Go 依赖（zeroidc 组件），需等待 ZeroTier 官方更新
+
+### v1.14.1.2
+- 基础版本（原始构建）
+
 ## mixins.pug 修改记录（排版优化）
 
 **问题**：routes 中 via 字段被挤到下一行，阅读不连贯  
