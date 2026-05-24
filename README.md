@@ -17,15 +17,61 @@ Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/zt
 
 ## Docker 镜像
 
-### Docker Hub
-```bash
-docker pull lu920115/zerotier-planet:v1.16.1.1
-```
+### 完整功能版（推荐）
+包含 ztncui Web 管理界面、入口脚本和完整依赖，适合大多数用户。
 
-### GitHub Container Registry (GHCR)
 ```bash
+# Docker Hub
+docker pull lu920115/zerotier-planet:v1.16.1.1
+
+# GitHub Container Registry (GHCR)
 docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1
 ```
+
+### 源码编译版（仅 ZeroTier One）
+从源码编译的纯净 ZeroTier One，体积仅 38MB，适合高级用户或嵌入式环境。不含 Web UI 和入口脚本。
+
+```bash
+# Docker Hub
+docker pull lu920115/zerotier-planet:v1.16.1.1-full
+
+# GitHub Container Registry (GHCR)
+docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full
+```
+
+### 源码编译版（含 Web UI）
+从源码编译，包含 ztncui Web 管理界面、入口脚本和自动配置，体积 108MB。推荐用于生产环境。
+
+```bash
+# Docker Hub
+docker pull lu920115/zerotier-planet:v1.16.1.1-full-web
+
+# GitHub Container Registry (GHCR)
+docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full-web
+```
+
+**各版本区别：**
+
+| 功能 | 完整版 `v1.16.1.1` | 编译版 `v1.16.1.1-full` | 编译版+Web `v1.16.1.1-full-web` |
+|------|-------------------|------------------------|--------------------------------|
+| 镜像大小 | ~790MB | ~38MB | ~108MB |
+| 构建方式 | 层叠升级 | 源码编译 | 源码编译 |
+| ztncui Web UI | ✅ 有 | ❌ 无 | ✅ 有 |
+| 入口脚本 | ✅ 有 | ❌ 无 | ✅ 有 |
+| planet 自动配置 | ✅ 支持 | ❌ 需手动 | ✅ 支持 |
+| 适用场景 | 生产环境 | 高级用户、嵌入式 | **推荐生产环境** |
+
+**编译版 (`v1.16.1.1-full`) 说明：**
+- 从 ZeroTier One 1.16.1 源码编译
+- 仅包含 zerotier-one 二进制，无 Web UI
+- 需手动配置 planet 和 moon 服务器
+- 所有操作通过 `zerotier-cli` 命令行完成
+
+**编译版+Web (`v1.16.1.1-full-web`) 说明：**
+- 从 ZeroTier One 1.16.1 源码编译
+- 包含 ztncui Web 管理界面（排版优化版）
+- 包含 supervisord 进程管理和自动初始化脚本
+- 体积小巧，功能完整，**推荐使用**
 
 ## 版本更新记录
 
