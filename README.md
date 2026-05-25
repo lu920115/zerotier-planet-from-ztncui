@@ -73,7 +73,74 @@ docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full-web
 - 包含 supervisord 进程管理和自动初始化脚本
 - 体积小巧，功能完整，**推荐使用**
 
+### 启动示例
+
+```bash
+docker run -d \
+  --name zerotier-planet \
+  -p 9993:9993/tcp \
+  -p 9993:9993/udp \
+  -p 3180:3180/tcp \
+  -p 3443:3443/tcp \
+  -e HTTP_ALL_INTERFACES=yes \
+  -e HTTP_PORT=3180 \
+  -v /path/to/zerotier-one:/var/lib/zerotier-one \
+  -v /path/to/ztncui/etc:/opt/key-networks/ztncui/etc \
+  lu920115/zerotier-planet:v1.16.1.1-full-web
+```
+
+**⚠️ 重要：数据持久化**
+
+必须使用 `-v` 挂载卷保存数据，否则容器删除后所有配置丢失：
+
+| 挂载路径 | 说明 | 必须 |
+|---------|------|------|
+| `/var/lib/zerotier-one` | ZeroTier 身份、planet、controller 网络数据 | ✅ |
+| `/opt/key-networks/ztncui/etc` | ztncui 密码、TLS 证书 | ✅ |
+
+### 升级注意事项
+
+**从 v1.14.1.2 升级到 v1.16.1.1-full-web：**
+
+1. **数据兼容**：controller 网络配置格式兼容，挂载相同卷即可保留所有网络
+2. **密码处理**：
+   - 如果挂载了旧的 `/opt/key-networks/ztncui/etc`，旧密码仍然有效
+   - **全新启动**（无挂载）时，默认用户名密码为 `admin` / `admin`
+   - 首次登录后**强制修改密码**（密码长度至少 10 位）
+3. **升级步骤**：
+   ```bash
+   # 1. 停止旧容器
+   docker stop zerotier-planet
+   docker rm zerotier-planet
+   
+   # 2. 用新镜像启动，挂载相同的数据卷
+   docker run -d \
+     --name zerotier-planet \
+     -p 9993:9993/tcp \
+     -p 9993:9993/udp \
+     -p 3180:3180/tcp \
+     -p 3443:3443/tcp \
+     -e HTTP_ALL_INTERFACES=yes \
+     -e HTTP_PORT=3180 \
+     -v /path/to/old/zerotier-one:/var/lib/zerotier-one \
+     -v /path/to/old/ztncui/etc:/opt/key-networks/ztncui/etc \
+     lu920115/zerotier-planet:v1.16.1.1-full-web
+   ```
+
+### 默认密码
+
+- **用户名**：`admin`
+- **密码**：`admin`
+- 首次登录后**必须修改密码**（至少 10 位字符）
+- 修改密码前无法进入管理界面
+
 ## 版本更新记录
+
+### v1.16.1.1-full-web (2025-05-26)
+- **新增编译版+Web 镜像**：从源码编译 ZeroTier One 1.16.1，包含完整 Web UI
+- **启用 embedded controller**：编译时添加 `ZT_NONFREE=1` 标志，支持网络控制器功能
+- **默认密码优化**：首次启动默认密码固定为 `admin`，登录后强制修改
+- **数据持久化支持**：支持挂载卷保留 zerotier-one 和 ztncui 配置
 
 ### v1.16.1.1 (2025-05-24)
 - **ZeroTier One 升级**: 从 v1.14.1.2 自动升级至 v1.16.1（通过官方 apt 源）
