@@ -18,7 +18,7 @@ Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/zt
 ## Docker 镜像
 
 ### 稳定版（推荐）
-基于 v1.14.1.2 层叠升级，体积较大但运行稳定，适合生产环境。
+基于ztncui v1.14.1排版优化后的升级，显示完整切运行稳定，适合生产环境。
 
 ```bash
 # Docker Hub
@@ -29,7 +29,7 @@ docker pull ghcr.io/lu920115/zerotier-planet:v1.14.1.2
 ```
 
 ### 层叠升级版
-在 v1.14.1.2 基础上通过 apt 升级至 ZeroTier One 1.16.1，并修复系统 CVE 漏洞。体积约 790MB。
+在 v1.14.1.2 基础上通过 apt 升级至 ZeroTier One 1.16.1，并修复系统 CVE 漏洞。体积较前增大。暂未完全测试
 
 ```bash
 # Docker Hub
