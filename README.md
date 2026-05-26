@@ -17,8 +17,19 @@ Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/zt
 
 ## Docker 镜像
 
-### 完整功能版（推荐）
-包含 ztncui Web 管理界面、入口脚本和完整依赖，适合大多数用户。
+### 稳定版（推荐）
+基于 v1.14.1.2 层叠升级，体积较大但运行稳定，适合生产环境。
+
+```bash
+# Docker Hub
+docker pull lu920115/zerotier-planet:v1.14.1.2
+
+# GitHub Container Registry (GHCR)
+docker pull ghcr.io/lu920115/zerotier-planet:v1.14.1.2
+```
+
+### 层叠升级版
+在 v1.14.1.2 基础上通过 apt 升级至 ZeroTier One 1.16.1，并修复系统 CVE 漏洞。体积约 790MB。
 
 ```bash
 # Docker Hub
@@ -28,51 +39,38 @@ docker pull lu920115/zerotier-planet:v1.16.1.1
 docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1
 ```
 
-### 源码编译版（仅 ZeroTier One）
-从源码编译的纯净 ZeroTier One，体积仅 38MB，适合高级用户或嵌入式环境。不含 Web UI 和入口脚本。
-
-```bash
-# Docker Hub
-docker pull lu920115/zerotier-planet:v1.16.1.1-full
-
-# GitHub Container Registry (GHCR)
-docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full
-```
-
 ### 源码编译版（含 Web UI）
-从源码编译，包含 ztncui Web 管理界面、入口脚本和自动配置，体积 108MB。推荐用于生产环境。
+从源码完全重新编译，体积较大，功能完整。**latest 标签指向此版本**。
 
 ```bash
 # Docker Hub
 docker pull lu920115/zerotier-planet:v1.16.1.1-full-web
+# 或
+docker pull lu920115/zerotier-planet:latest
 
 # GitHub Container Registry (GHCR)
 docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full-web
+# 或
+docker pull ghcr.io/lu920115/zerotier-planet:latest
 ```
 
 **各版本区别：**
 
-| 功能 | 完整版 `v1.16.1.1` | 编译版 `v1.16.1.1-full` | 编译版+Web `v1.16.1.1-full-web` |
-|------|-------------------|------------------------|--------------------------------|
-| 镜像大小 | ~790MB | ~38MB | ~108MB |
-| 构建方式 | 层叠升级 | 源码编译 | 源码编译 |
-| ztncui Web UI | ✅ 有 | ❌ 无 | ✅ 有 |
-| 入口脚本 | ✅ 有 | ❌ 无 | ✅ 有 |
-| planet 自动配置 | ✅ 支持 | ❌ 需手动 | ✅ 支持 |
-| 适用场景 | 生产环境 | 高级用户、嵌入式 | **推荐生产环境** |
+| 功能 | 稳定版 `v1.14.1.2` | 层叠版 `v1.16.1.1` | 编译版 `v1.16.1.1-full-web` |
+|------|-------------------|-------------------|---------------------------|
+| 镜像大小 | ~170MB | ~790MB | ~206MB |
+| 构建方式 | 原始构建 | 层叠升级 | 源码编译 |
+| ZeroTier 版本 | 1.14.1 | 1.16.1 | 1.16.1 |
+| ztncui Web UI | ✅ 有 | ✅ 有 | ✅ 有 |
+| 入口脚本 | ✅ 有 | ✅ 有 | ✅ 有 |
+| planet 自动配置 | ✅ 支持 | ✅ 支持 | ✅ 支持 |
+| 稳定性 | **最稳定** | 稳定 | 暂时不太稳定 |
+| 适用场景 | **生产环境首选** | 生产环境 | 测试/尝鲜 |
 
-**编译版 (`v1.16.1.1-full`) 说明：**
-- 从 ZeroTier One 1.16.1 源码编译
-- 仅包含 zerotier-one 二进制，无 Web UI
-- 需手动配置 planet 和 moon 服务器
-- 所有操作通过 `zerotier-cli` 命令行完成
-
-**编译版+Web (`v1.16.1.1-full-web`) 说明：**
-- 从 ZeroTier One 1.16.1 源码编译
-- 包含 ztncui Web 管理界面（排版优化版）
-- 包含 supervisord 进程管理和自动初始化脚本
-- **新增 planet 文件 HTTP 服务**（ztplaserv），监听 3180 端口
-- 体积小巧，功能完整，**推荐使用**
+**⚠️ 重要提示：**
+- `v1.16.1.1-full-web` 为源码完全重新编译版本，体积较大
+- 如遇到网络反复重新连接的情况，请退回至 `v1.14.1.2` 版本
+- `latest` 标签目前指向 `v1.16.1.1-full-web`
 
 ### 启动示例
 
@@ -87,7 +85,7 @@ docker run -d \
   -e HTTP_PORT=28000 \
   -v /path/to/zerotier-one:/var/lib/zerotier-one \
   -v /path/to/ztncui/etc:/opt/key-networks/ztncui/etc \
-  lu920115/zerotier-planet:v1.16.1.1-full-web
+  lu920115/zerotier-planet:latest
 ```
 
 **端口说明：**
@@ -120,19 +118,19 @@ docker run -d \
    - `23180:3180` → planet 文件下载服务（ztplaserv）
    - `28000:28000` → ztncui Web UI 控制台
    - 环境变量 `HTTP_PORT=28000` 指定 Web UI 端口
-   ```bash
-   docker run -d \
-     --name zerotier-planet \
-     -p 9993:9993/tcp \
-     -p 9993:9993/udp \
-     -p 23180:3180/tcp \
-     -p 28000:28000/tcp \
-     -e HTTP_ALL_INTERFACES=yes \
-     -e HTTP_PORT=28000 \
-     -v /path/to/old/zerotier-one:/var/lib/zerotier-one \
-     -v /path/to/old/ztncui/etc:/opt/key-networks/ztncui/etc \
-     lu920115/zerotier-planet:v1.16.1.1-full-web
-   ```
+  ```bash
+  docker run -d \
+    --name zerotier-planet \
+    -p 9993:9993/tcp \
+    -p 9993:9993/udp \
+    -p 23180:3180/tcp \
+    -p 28000:28000/tcp \
+    -e HTTP_ALL_INTERFACES=yes \
+    -e HTTP_PORT=28000 \
+    -v /path/to/old/zerotier-one:/var/lib/zerotier-one \
+    -v /path/to/old/ztncui/etc:/opt/key-networks/ztncui/etc \
+    lu920115/zerotier-planet:latest
+  ```
 
 ### 默认密码
 
