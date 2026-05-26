@@ -170,33 +170,64 @@ unset ZTNCUI_PASSWD
 cd /opt/key-networks/ztncui && exec gosu zerotier-one:zerotier-one node ./bin/www
 EOF
 
-# 创建 supervisord 配置
-RUN echo '[program:ztone]' > /etc/supervisord.conf \
-    && echo 'command=/start_zt1.sh' >> /etc/supervisord.conf \
-    && echo 'autostart=true' >> /etc/supervisord.conf \
-    && echo 'startsecs=10' >> /etc/supervisord.conf \
-    && echo 'startretries=3' >> /etc/supervisord.conf \
-    && echo 'priority=5' >> /etc/supervisord.conf \
-    && echo 'redirect_stderr=true' >> /etc/supervisord.conf \
-    && echo 'directory=/tmp' >> /etc/supervisord.conf \
-    && echo 'stdout_logfile=/var/log/docker-ztone.log' >> /etc/supervisord.conf \
-    && echo '' >> /etc/supervisord.conf \
-    && echo '[program:ztncui]' >> /etc/supervisord.conf \
-    && echo 'command=/start_ztncui.sh' >> /etc/supervisord.conf \
-    && echo 'autostart=true' >> /etc/supervisord.conf \
-    && echo 'startsecs=10' >> /etc/supervisord.conf \
-    && echo 'startretries=3' >> /etc/supervisord.conf \
-    && echo 'priority=10' >> /etc/supervisord.conf \
-    && echo 'redirect_stderr=true' >> /etc/supervisord.conf \
-    && echo 'directory=/opt/key-networks/ztncui' >> /etc/supervisord.conf \
-    && echo 'stdout_logfile=/var/log/docker-ztncui.log' >> /etc/supervisord.conf \
-    && echo '' >> /etc/supervisord.conf \
-    && echo '[supervisord]' >> /etc/supervisord.conf \
-    && echo 'logfile=/var/log/docker-supervisord.log' >> /etc/supervisord.conf \
-    && echo 'nodaemon=true' >> /etc/supervisord.conf
+# 创建 planet 文件服务启动脚本
+RUN cat > /start_ztplaserv.sh << 'EOF'
+#!/bin/bash
+set -e
+
+# 等待 zerotier-one 生成 planet 文件
+while [ ! -f /var/lib/zerotier-one/planet ]; do
+    echo "Planet file is not found... Wait for ZT1 to start..."
+    sleep 2
+done
+
+# 创建 myfs 目录并复制 planet 文件
+mkdir -p /opt/key-networks/ztncui/etc/myfs
+cp /var/lib/zerotier-one/planet /opt/key-networks/ztncui/etc/myfs/planet
+
+# 使用 Python 启动简单的 HTTP 服务器提供 planet 文件下载
+cd /opt/key-networks/ztncui/etc/myfs
+exec python3 -m http.server 3180
+EOF
+
+# 创建 supervisord 配置（包含 ztplaserv 服务）
+RUN cat > /etc/supervisord.conf << 'EOF'
+[program:ztone]
+command=/start_zt1.sh
+autostart=true
+startsecs=10
+startretries=3
+priority=5
+redirect_stderr=true
+directory=/tmp
+stdout_logfile=/var/log/docker-ztone.log
+
+[program:ztncui]
+command=/start_ztncui.sh
+autostart=true
+startsecs=10
+startretries=3
+priority=10
+redirect_stderr=true
+directory=/opt/key-networks/ztncui
+stdout_logfile=/var/log/docker-ztncui.log
+
+[program:ztplaserv]
+command=/start_ztplaserv.sh
+autostart=true
+startsecs=10
+startretries=3
+priority=15
+redirect_stderr=true
+stdout_logfile=/var/log/docker-ztplaserv.log
+
+[supervisord]
+logfile=/var/log/docker-supervisord.log
+nodaemon=true
+EOF
 
 # 设置权限
-RUN chmod +x /start_zt1.sh /start_ztncui.sh \
+RUN chmod +x /start_zt1.sh /start_ztncui.sh /start_ztplaserv.sh \
     && chown -R zerotier-one:zerotier-one /var/lib/zerotier-one /opt/key-networks/ztncui
 
 # 暴露端口
