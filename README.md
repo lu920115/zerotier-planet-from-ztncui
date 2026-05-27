@@ -29,29 +29,29 @@ docker pull ghcr.io/lu920115/zerotier-planet:v1.14.1.2
 ```
 
 ### 层叠升级版
-在 v1.14.1.2 基础上通过 apt 升级至 ZeroTier One 1.16.1，并修复系统 CVE 漏洞。修改默认账户密码为 admin/admin，老用户升级保留原密码。
+在 v1.14.1.2 基础上通过 apt 升级至 ZeroTier One 1.16.1，并修复系统 CVE 漏洞。修改默认账户密码为 admin/admin，老用户升级保留原密码。**latest 标签指向此版本**。
 
 ```bash
 # Docker Hub
 docker pull lu920115/zerotier-planet:v1.16.1.2
-
-# GitHub Container Registry (GHCR)
-docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.2
-```
-
-### 源码编译版（含 Web UI）
-从源码完全重新编译，功能完整。**latest 标签指向此版本**。修改默认账户密码为 admin/admin，首次登录后强制修改为自己的密码。
-
-```bash
-# Docker Hub
-docker pull lu920115/zerotier-planet:v1.16.1.1-full-web
 # 或
 docker pull lu920115/zerotier-planet:latest
 
 # GitHub Container Registry (GHCR)
-docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full-web
+docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.2
 # 或
 docker pull ghcr.io/lu920115/zerotier-planet:latest
+```
+
+### 源码编译版（含 Web UI）
+从源码完全重新编译，功能完整。修改默认账户密码为 admin/admin，首次登录后强制修改为自己的密码。
+
+```bash
+# Docker Hub
+docker pull lu920115/zerotier-planet:v1.16.1.1-full-web
+
+# GitHub Container Registry (GHCR)
+docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full-web
 ```
 
 **各版本区别：**
