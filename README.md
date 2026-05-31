@@ -18,7 +18,7 @@ Screenshots can be seen at [key-networks.com/ztncui](https://key-networks.com/zt
 ## Docker 镜像
 
 ### 稳定版（推荐）
-基于 v1.14.1.2 层叠升级，体积较大但运行稳定，适合生产环境。
+基于 ztncui v1.14.1 排版优化后的升级，显示完整且运行稳定，适合生产环境。
 
 ```bash
 # Docker Hub
@@ -28,8 +28,8 @@ docker pull lu920115/zerotier-planet:v1.14.1.2
 docker pull ghcr.io/lu920115/zerotier-planet:v1.14.1.2
 ```
 
-### 层叠升级版
-在 v1.14.1.2 基础上通过 apt 升级至 ZeroTier One 1.16.2，并修复系统 CVE 漏洞。体积约 790MB。**latest 标签指向此版本**。
+### 层叠升级版（最新）
+在 v1.14.1.2 基础上通过 apt 升级至 ZeroTier One 1.16.2，并修复系统 CVE 漏洞。修改默认账户密码为 admin/admin，老用户升级保留原密码。**latest 标签指向此版本**。
 
 ```bash
 # Docker Hub
@@ -48,39 +48,37 @@ docker pull ghcr.io/lu920115/zerotier-planet:latest
 
 ```bash
 # Docker Hub
-docker pull lu920115/zerotier-planet:v1.16.1.1
+docker pull lu920115/zerotier-planet:v1.16.1.2
 
 # GitHub Container Registry (GHCR)
-docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1
+docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.2
 ```
 
 ### 源码编译版（含 Web UI）
-从源码完全重新编译，体积较大，功能完整。**latest 标签指向此版本**。
+从源码完全重新编译，功能完整。修改默认账户密码为 admin/admin，首次登录后强制修改为自己的密码。
 
 ```bash
 # Docker Hub
 docker pull lu920115/zerotier-planet:v1.16.1.1-full-web
-# 或
-docker pull lu920115/zerotier-planet:latest
 
 # GitHub Container Registry (GHCR)
 docker pull ghcr.io/lu920115/zerotier-planet:v1.16.1.1-full-web
-# 或
-docker pull ghcr.io/lu920115/zerotier-planet:latest
 ```
 
 **各版本区别：**
 
-| 功能 | 稳定版 `v1.14.1.2` | 层叠版 `v1.16.2.1` | 旧版 `v1.16.1.1` | 编译版 `v1.16.1.1-full-web` |
+| 功能 | 稳定版 `v1.14.1.2` | 层叠版 `v1.16.2.1` | 旧版 `v1.16.1.2` | 编译版 `v1.16.1.1-full-web` |
 |------|-------------------|-------------------|-------------------|---------------------------|
-| 镜像大小 | ~170MB | ~790MB | ~790MB | ~206MB |
+| 镜像大小 | ~179MB | ~790MB | ~216MB | ~219MB |
+| 运行时大小 | ~229MB | ~790MB | ~250MB | ~250MB |
 | 构建方式 | 原始构建 | 层叠升级 | 层叠升级 | 源码编译 |
 | ZeroTier 版本 | 1.14.1 | **1.16.2** | 1.16.1 | 1.16.1 |
 | ztncui Web UI | 有 | 有 | 有 | 有 |
-| planet 自动配置 | 支持 | 支持 | 支持 | 支持 |
+| 默认密码 | admin/admin | admin/admin | admin/admin | admin/admin |
+| 首次登录强制改密 | 否 | 是 | 是 | 是 |
+| 老用户升级保留密码 | - | 是 | 是 | 是 |
 | 稳定性 | **最稳定** | **稳定** | 稳定 | 暂时不太稳定 |
 | 适用场景 | **生产环境首选** | **生产环境推荐** | 已过时 | 测试/尝鲜 |
-| 适用场景 | **生产环境首选** | 生产环境 | 测试/尝鲜 |
 
 **⚠️ 重要提示：**
 - `v1.16.2.1` 为当前最新推荐版本，ZeroTier One 1.16.2
@@ -123,11 +121,11 @@ docker run -d \
 
 ### 升级注意事项
 
-**从 v1.14.1.2 / v1.16.1.1 升级到 v1.16.2.1：**
+**从 v1.14.1.2 / v1.16.1.2 升级到 v1.16.2.1：**
 
 1. **数据兼容**：controller 网络配置格式兼容，挂载相同卷即可保留所有网络
 2. **密码处理**：
-   - 如果挂载了旧的 `/opt/key-networks/ztncui/etc`，旧密码仍然有效
+   - 如果挂载了旧的 `/opt/key-networks/ztncui/etc`，旧密码仍然有效（老用户升级保留原密码）
    - **全新启动**（无挂载）时，默认用户名密码为 `admin` / `admin`
    - 首次登录后**强制修改密码**（密码长度至少 10 位）
 3. **端口映射**：
@@ -158,10 +156,17 @@ docker run -d \
 ## 版本更新记录
 
 ### v1.16.2.1 (2026-06-01)
-- **ZeroTier One 升级**: 从 v1.16.1.1 升级至 v1.16.2（官方 2026-05-27 发布）
+- **ZeroTier One 升级**: 从 v1.16.1.2 升级至 v1.16.2（官方 2026-05-27 发布）
 - **系统包更新**: 通过 `apt-get upgrade` 同步更新系统包
 - **latest 标签更新**: `latest` 标签现指向 v1.16.2.1
 - **测试验证**: 已通过 Mac mini (ARM64) 本地测试，Web UI / planet 下载 / 登录功能正常
+
+### v1.16.1.2 (2025-05-27)
+- **基于 v1.14.1.2 层叠升级**：通过 apt 升级至 ZeroTier One 1.16.1
+- **默认密码优化**：首次启动默认密码固定为 `admin/admin`
+- **老用户升级兼容**：如已挂载旧的 `/opt/key-networks/ztncui/etc`，保留原密码不变
+- **ztplaserv 服务改进**：使用 Python HTTP 服务器替代 Go 的 gfileserv，避免某些架构下的崩溃问题
+- **体积优化**：镜像体积约 216MB，运行时约 250MB
 
 ### v1.16.1.1-full-web (2025-05-26)
 - **新增 planet 文件 HTTP 服务**：添加 `ztplaserv` 服务，使用 Python HTTP 服务器提供 planet 文件下载，监听 3180 端口
@@ -182,6 +187,8 @@ docker run -d \
 
 ### v1.14.1.2
 - 基础版本（原始构建）
+- 镜像体积约 179MB，运行时约 229MB
+- 最稳定版本，推荐生产环境使用
 
 ## mixins.pug 修改记录（排版优化）
 
@@ -200,6 +207,7 @@ docker run -d \
 if (Object.keys(item).length <= 2) {
   inner = inner.replace(/,\n\s*/g, ', ');
 }
+```
 
 Follow us on [![alt @key_networks on Twitter](https://i.imgur.com/wWzX9uB.png)](https://twitter.com/key_networks)
 
@@ -455,52 +463,3 @@ Invite users to join the network with:
 ```shell
 sudo zerotier-cli join ################
 ```
-where ################ is the 16-digit ZeroTier network ID.
-
-Get the user to send you their 10-digit ZeroTier address, which they can get by running:
-```shell
-sudo zerotier-cli status
-```
-
-#### Authorize members on the network
-On the **Networks** page, click **members** to see the devices which are trying to join the network.  Use the ZeroTier address given to you by the user to identify them and name them appropriately under **Member name**.
-
-Then check the **Authorized** checkbox to authorize the user on the network.
-
-If the user's device is online and you click the **Refresh** button, you should see their IP assignment being populated.
-
-Once two or more members are authorized on the network, they should be able to connect to each other via their assigned IP addresses.
-
-#### IP Assignments
-IP assignments can be changed by clicking on the IP address in the **members** page.  Enter an IP address in the managed route subnet and click the **+** icon.  Then delete the old IP address.
-
-#### Ethernet bridging
-Ethernet bridging between virtual and physical networks can be enabled by checking the **Active bridge** checkbox on the **members** page.
-
-#### Network detail
-On the **Networks** page, click **detail** to see the detail of a network.
-
-Note that certain properties can be set by clicking on them - e.g.:
-* ipAssignmentPools
-* name
-* routes
-* v4AssignMode
-* v6AssignMode
-
-Note that editing of certain properties, such as rules and tags, has not been implemented yet.  Please feed back on your requirements.
-
-#### Member detail
-On the network **detail** page and on the **members** page, if you click on the member ID, you will end up on the member detail page.
-
-## Feedback
-Please give us your feedback... good, bad or ugly.  Constructive criticism is welcomed.  Please use the contact form at [key-networks.com](https://key-networks.com/) - Thanks :)
-
-## Bug and Vulnerability Reporting
-Problems with ztncui can be reported using the GitHub issue tracking system.  Please use the contact form at [key-networks.com](https://key-networks.com/) to privately report potential vulnerabilities.  Thank you.
-
-## License
-The ztncui code is open source code, licensed under the GNU GPLv3, and is free to use on those terms. If you are interested in commercial licensing, please contact us via the contact form at [key-networks.com](https://key-networks.com) .
-
-## Thanks
-- @lideming for a rework and improvement of the network details page, adding DNS support, peer status/address/latency and other improvements.
-- @Koromix for a fix for incompatibility with ZeroTier 1.12.
